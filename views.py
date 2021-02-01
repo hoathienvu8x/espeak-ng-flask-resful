@@ -1,6 +1,8 @@
 from espeech import app
-from flask import render_template, jsonify, request
+from flask import render_template, jsonify, request, make_response
 from espeak import ESpeakNG
+import StringIO
+import base64
 
 @app.route('/')
 def index():
@@ -22,4 +24,18 @@ def get_tts():
         req = request.args
     text = req.get('text','')
     
-    return jsonify({"text":str(text)})
+    if not text:
+        return jsonify(["No data"])
+    
+    esng = ESpeakNG()
+    esng.voice = 'en-us'
+    wavs = esng.synth_wav(text)
+
+    if len(wavs) == 0:
+        return jsonify(["Could not general tts"])
+
+    response = make_response(wavs)
+    response.headers['Content-Type'] = 'audio/wav'
+    response.headers['Content-Disposition'] = 'attachment; filename=sound.wav'
+
+    return response
