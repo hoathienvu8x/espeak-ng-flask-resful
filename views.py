@@ -42,7 +42,9 @@ def get_tts():
     
     if not text:
         return jsonify(["No data"])
-    
+
+    text = urllib.unquote_plus(text)
+
     esng = ESpeakNG()
     esng.voice = 'en-us'
     wavs = esng.synth_wav(text)
