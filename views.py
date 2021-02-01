@@ -3,10 +3,26 @@ from flask import render_template, jsonify, request, make_response
 from espeak import ESpeakNG
 import StringIO
 import base64
+import urllib
+from markupsafe import Markup
 
-@app.route('/')
+@app.template_filter('urlencode')
+def urlencode_filter(s):
+    if type(s) == 'Markup':
+        s = s.unescape()
+    s = s.encode('utf8')
+    s = urllib.quote_plus(s)
+    return Markup(s)
+
+@app.route('/', methods = ['GET','POST'])
 def index():
-    return render_template('index.html')
+    if request.method == "POST":
+        req = request.form
+    else:
+        req = request.args
+    text = req.get('text','')
+    
+    return render_template('index.html', text = text)
 
 @app.route('/voices', methods = ['GET'])
 def get_voices():

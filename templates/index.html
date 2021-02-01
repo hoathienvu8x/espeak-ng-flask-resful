@@ -5,4 +5,16 @@
 {% block content %}
     <h1>Welcome to espeech!</h1>
     <p>Thank you for using espeech.</p>
+    <form action="" method="post">
+        <p><select name="lng"></select></p>
+        <p><select name="voice"></select></p>
+        <p><textarea name="text">{% if text %}{{ text }}{% endif %}</textarea></p>
+        <p><button type="submit">Play</button>
+    </form>
+    {% if text %}
+    <audio controls autoplay>
+        <source src="/tts?text={{ text | urlencode }}" type="audio/wav">
+        Your browser does not support the audio element.
+    </audio>
+    {% endif %}
 {% endblock %}
